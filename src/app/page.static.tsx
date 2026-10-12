@@ -1,5 +1,5 @@
-import Home from './page';
+import RunRouteApp from '@/components/RunRouteApp';
 
 export default function GitHubPagesPreview() {
-  return <Home />;
+  return <RunRouteApp />;
 }

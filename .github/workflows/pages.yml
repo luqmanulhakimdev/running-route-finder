@@ -39,7 +39,12 @@ jobs:
         env:
           GITHUB_PAGES: 'true'
           NEXT_PUBLIC_STATIC_MODE: 'true'
-        run: npm run build
+        run: |
+          mkdir -p /tmp/runroute-api
+          mv src/app/api /tmp/runroute-api/api
+          restore_api() { mv /tmp/runroute-api/api src/app/api; }
+          trap restore_api EXIT
+          npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

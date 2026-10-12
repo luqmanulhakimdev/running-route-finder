@@ -5,3 +5,5 @@
 .map-canvas{width:100%;height:100%;min-height:450px}.map-canvas .maplibregl-map{width:100%;height:100%}
 @media(max-width:900px){.map-canvas{min-height:350px}}
 @media(max-width:500px){.map-canvas{min-height:310px}}
+.static-notice{display:flex;align-items:flex-start;gap:8px;margin:0 0 9px;padding:10px;border:1px solid #e7e4d8;border-radius:7px;background:#faf8ef;color:#777254;font-size:9px;line-height:1.45}.static-notice svg{flex:none;margin-top:1px}
+.searchbox input:disabled{color:#8d9088;cursor:not-allowed}

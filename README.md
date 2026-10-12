@@ -40,6 +40,8 @@ npm start         # serve the production build
 
 GitHub Actions runs lint, type checks, unit tests, and a production build on pushes and pull requests targeting `main`. To make the key available during the workflow build, create the `OPENROUTESERVICE_API_KEY` repository secret in **Settings → Secrets and variables → Actions**. This CI workflow does not deploy the app; configure the same variable in the eventual hosting provider for runtime routing and geocoding.
 
+A separate **Deploy GitHub Pages** workflow publishes a static preview at `https://luqmanulhakimdev.github.io/running-route-finder/` after pushes to `main`. In repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions** if it is not already selected. The Pages preview supports the map, device location, and manual point selection. It does not run route search or geocoding because GitHub Pages cannot host the app’s dynamic API handlers; no ORS key is exposed in the static bundle. Use a Next.js-capable server deployment for the complete route-discovery workflow.
+
 ## Environment
 
 - `OPENROUTESERVICE_API_KEY` — required for live route generation and geocoding; server-only.

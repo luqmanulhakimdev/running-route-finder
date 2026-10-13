@@ -37,8 +37,8 @@ jobs:
 
       - name: Build static preview
         env:
-          GITHUB_PAGES: 'true'
-          NEXT_PUBLIC_STATIC_MODE: 'true'
+          GITHUB_PAGES: "true"
+          NEXT_PUBLIC_STATIC_MODE: "true"
         run: |
           mkdir -p /tmp/runroute-api
           mv src/app/api /tmp/runroute-api/api

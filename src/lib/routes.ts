@@ -1,10 +1,93 @@
 export type Position = [number, number];
-export type ElevationSample = { distanceMeters: number; elevationMeters: number | null };
-export type Route = { id: string; name: string; category: string; geometry: Position[]; distanceMeters: number; ascentMeters: number | null; descentMeters: number | null; elevationSamples: ElevationSample[]; durationSeconds: number; rankingScore: number; rankingExplanation: string; dataSource: string; warnings: string[] };
-export const haversine = (a: Position, b: Position) => { const r=6371000, rad=Math.PI/180, dLat=(b[1]-a[1])*rad, dLon=(b[0]-a[0])*rad; const x=Math.sin(dLat/2)**2+Math.cos(a[1]*rad)*Math.cos(b[1]*rad)*Math.sin(dLon/2)**2; return 2*r*Math.asin(Math.sqrt(x)); };
-export const geometryDistance = (line: Position[]) => line.slice(1).reduce((sum,p,i)=>sum+haversine(line[i],p),0);
-export const elevationTotals = (values:(number|null)[]) => { let ascent=0,descent=0,known=0; for(let i=1;i<values.length;i++){if(values[i]!=null&&values[i-1]!=null){known++;const diff=values[i]!-values[i-1]!;if(diff>0)ascent+=diff;else descent-=diff;}} return known?{ascent,descent}:{ascent:null,descent:null}; };
-export const isWithinTolerance = (distance:number,target:number,tolerance:number) => distance>=target*(1-tolerance/100)&&distance<=target*(1+tolerance/100);
-export const deduplicateRoutes = <T extends {geometry:Position[];distanceMeters:number}>(routes:T[]) => { const kept:T[]=[]; for(const route of routes){if(!kept.some(other=>Math.abs(route.distanceMeters-other.distanceMeters)<80&& route.geometry.length>0&&other.geometry.length>0&&haversine(route.geometry[0],other.geometry[0])<15&&route.geometry.filter((p,i)=>i%Math.max(1,Math.floor(route.geometry.length/10))===0).every(p=>other.geometry.some(q=>haversine(p,q)<65))))kept.push(route);}return kept; };
+export type ElevationSample = {
+  distanceMeters: number;
+  elevationMeters: number | null;
+};
+export type Route = {
+  id: string;
+  name: string;
+  category: string;
+  geometry: Position[];
+  distanceMeters: number;
+  ascentMeters: number | null;
+  descentMeters: number | null;
+  elevationSamples: ElevationSample[];
+  durationSeconds: number;
+  rankingScore: number;
+  rankingExplanation: string;
+  dataSource: string;
+  warnings: string[];
+};
+export const haversine = (a: Position, b: Position) => {
+  const r = 6371000,
+    rad = Math.PI / 180,
+    dLat = (b[1] - a[1]) * rad,
+    dLon = (b[0] - a[0]) * rad;
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * r * Math.asin(Math.sqrt(x));
+};
+export const geometryDistance = (line: Position[]) =>
+  line.slice(1).reduce((sum, p, i) => sum + haversine(line[i], p), 0);
+export const elevationTotals = (values: (number | null)[]) => {
+  let ascent = 0,
+    descent = 0,
+    known = 0;
+  for (let i = 1; i < values.length; i++) {
+    if (values[i] != null && values[i - 1] != null) {
+      known++;
+      const diff = values[i]! - values[i - 1]!;
+      if (diff > 0) ascent += diff;
+      else descent -= diff;
+    }
+  }
+  return known ? { ascent, descent } : { ascent: null, descent: null };
+};
+export const isWithinTolerance = (
+  distance: number,
+  target: number,
+  tolerance: number,
+) =>
+  distance >= target * (1 - tolerance / 100) &&
+  distance <= target * (1 + tolerance / 100);
+export const deduplicateRoutes = <
+  T extends { geometry: Position[]; distanceMeters: number },
+>(
+  routes: T[],
+) => {
+  const kept: T[] = [];
+  for (const route of routes) {
+    if (
+      !kept.some(
+        (other) =>
+          Math.abs(route.distanceMeters - other.distanceMeters) < 80 &&
+          route.geometry.length > 0 &&
+          other.geometry.length > 0 &&
+          haversine(route.geometry[0], other.geometry[0]) < 15 &&
+          route.geometry
+            .filter(
+              (p, i) =>
+                i % Math.max(1, Math.floor(route.geometry.length / 10)) === 0,
+            )
+            .every((p) => other.geometry.some((q) => haversine(p, q) < 65)),
+      )
+    )
+      kept.push(route);
+  }
+  return kept;
+};
 
-export const validGeometry = (line:Position[]) => line.length >= 2 && line.every(p=>p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&p[0]>=-180&&p[0]<=180&&p[1]>=-90&&p[1]<=90) && geometryDistance(line)>0;
+export const validGeometry = (line: Position[]) =>
+  line.length >= 2 &&
+  line.every(
+    (p) =>
+      p.length === 2 &&
+      Number.isFinite(p[0]) &&
+      Number.isFinite(p[1]) &&
+      p[0] >= -180 &&
+      p[0] <= 180 &&
+      p[1] >= -90 &&
+      p[1] <= 90,
+  ) &&
+  geometryDistance(line) > 0;
